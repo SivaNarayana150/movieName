@@ -61,7 +61,7 @@ app.post("/movies/", async (request, response) => {
     (director_id,movie_name,lead_actor)
     VALUES ('${directorId}','${movieName}','${leadActor}');`;
   const dbResponse = await db.run(queryToCreateNewMovie);
-  response.send("player added to team");
+  response.send("Movie Successfully Added");
 });
 
 // getting a particular movie
@@ -73,7 +73,7 @@ app.get("/movies/:movieId/", async (request, response) => {
 });
 
 // updating new movie
-app.post("/movies/:movieId/", async (request, response) => {
+app.put("/movies/:movieId/", async (request, response) => {
   const movieDetails = request.body;
   const { movieId } = request.params;
   const { directorId, movieName, leadActor } = movieDetails;
@@ -86,3 +86,47 @@ app.post("/movies/:movieId/", async (request, response) => {
   await db.run(movieUpdateQuery);
   response.send("Movie Details Updated");
 });
+
+// Deleting a movie
+app.delete("/movies/:movieId/", async (request, response) => {
+  const { movieId } = request.params;
+  const deleteQuery = `DELETE FROM movie 
+    WHERE movie_id=${movieId};`;
+  await db.run(deleteQuery);
+  response.send("Movie Removed");
+});
+
+const convertObjectDatabaseAndServerDirector = (dbObject) => {
+  return {
+    directorId: dbObject.director_id,
+    directorName: dbObject.director_name,
+  };
+};
+
+//getting all directors details
+
+app.get("/directors/", async (request, response) => {
+  const getDirectorDetailsQuery = `SELECT * FROM director;`;
+  const getDirectorName = await db.all(getDirectorDetailsQuery);
+  response.send(
+    getDirectorName.map((directors) =>
+      convertObjectDatabaseAndServerDirector(directors)
+    )
+  );
+});
+
+const convertObjectSpecifiedObject = (dbObject) => {
+  return {
+    movieName: dbObject.movie_name,
+  };
+};
+
+// get specified director
+app.get("/directors/:directorId/movies/", async (request, response) => {
+  const { directorId } = request.params;
+  const queryToGetSpecifiedMovieName = `SELECT movie_name FROM movie WHERE director_id=${directorId};`;
+  const movieNames = await db.get(queryToGetSpecifiedMovieName);
+  response.send(convertObjectSpecifiedObject(movieNames));
+});
+
+module.exports = app;

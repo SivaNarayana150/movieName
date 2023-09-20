@@ -17,7 +17,7 @@ GET http://localhost:3001/movies/47/
 
 ###
 
-PUT https://localhost:3001/movies/12/ 
+PUT https://localhost:3001/movies/47/ 
 Content-Type: application/json 
 
 {
@@ -27,6 +27,19 @@ Content-Type: application/json
 }
 
 ###
+
+DELETE  https://localhost:3001/movies/47/ 
+
+###
+
+
+
+GET http://localhost:3001/directors/13/movies/
+
+###
+
+
+
 
 
 
