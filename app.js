@@ -71,3 +71,18 @@ app.get("/movies/:movieId/", async (request, response) => {
   const movie = await db.get(queryToGet);
   response.send(convertObject(movie));
 });
+
+// updating new movie
+app.post("/movies/:movieId/", async (request, response) => {
+  const movieDetails = request.body;
+  const { movieId } = request.params;
+  const { directorId, movieName, leadActor } = movieDetails;
+  const movieUpdateQuery = `UPDATE movie 
+    SET director_id='${directorId}',movie_name='${movieName}',
+    lead_actor='${leadActor}' WHERE movie_id=${movieId};
+
+    `;
+
+  await db.run(movieUpdateQuery);
+  response.send("Movie Details Updated");
+});

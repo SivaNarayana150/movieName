@@ -13,6 +13,20 @@ Content-Type: application/json
 ###
 
 
-GET http://localhost:3001/movies/12/
+GET http://localhost:3001/movies/47/
 
 ###
+
+PUT https://localhost:3001/movies/12/ 
+Content-Type: application/json 
+
+{
+  "directorId": 24,
+  "movieName": "Thor",
+  "leadActor": "Christopher Hemsworth"
+}
+
+###
+
+
+
