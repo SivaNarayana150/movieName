@@ -27,6 +27,15 @@ const initializeDbAndServer = async () => {
 };
 initializeDbAndServer();
 
+const convertObject = (dbObject) => {
+  return {
+    movieId: dbObject.movie_id,
+    directorId: dbObject.director_id,
+    movieName: dbObject.movie_name,
+    leadActor: dbObject.lead_actor,
+  };
+};
+
 const convertObjectDatabaseAndServer = (dbObject) => {
   return {
     movieName: dbObject.movie_name,
@@ -34,11 +43,31 @@ const convertObjectDatabaseAndServer = (dbObject) => {
 };
 //API to get movie names
 app.get("/movies/", async (request, response) => {
-  const getMovieNameQuerry = `SELECT movie_name FROM movie;`;
-  const getMovieName = await db.all(getMovieNameQuerry);
+  const getMovieNameQuery = `SELECT movie_name FROM movie;`;
+  const getMovieName = await db.all(getMovieNameQuery);
   response.send(
     getMovieName.map((eachMovieName) =>
       convertObjectDatabaseAndServer(eachMovieName)
     )
   );
+});
+
+// creating a new movie using post command
+app.post("/movies/", async (request, response) => {
+  const movieDetails = request.body;
+  const { directorId, movieName, leadActor } = movieDetails;
+  const queryToCreateNewMovie = `INSERT INTO 
+    movie 
+    (director_id,movie_name,lead_actor)
+    VALUES ('${directorId}','${movieName}','${leadActor}');`;
+  const dbResponse = await db.run(queryToCreateNewMovie);
+  response.send("player added to team");
+});
+
+// getting a particular movie
+app.get("/movies/:movieId/", async (request, response) => {
+  const { movieId } = request.params;
+  const queryToGet = `SELECT * FROM movie WHERE movie_id=${movieId};`;
+  const movie = await db.get(queryToGet);
+  response.send(convertObject(movie));
 });
